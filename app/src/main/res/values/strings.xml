@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Weather Forecast</string>
+    <string name="APIKEY">apikey from openweathermap.org</string>
+
+    <string name="city">City:</string>
+    <string name="time">Date and Time:</string>
+    <string name="temperature">Temperature:</string>
+    <string name="wind">Wind:</string>
+    <string name="pressure">Atmospheric pressure:</string>
+    <string name="description">Weather Description:</string>
+
+</resources>

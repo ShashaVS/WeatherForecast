@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ImageButton
+        android:id="@+id/btn_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:layout_gravity="center"
+        android:background="@mipmap/ic_sync_black_48dp"
+        />
+
+    <ProgressBar
+        android:id="@+id/pr_bar"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:text="@string/city"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/city"
+        android:layout_margin="8dp" />
+
+    <TextView
+        android:text="@string/time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/time"
+        android:layout_margin="8dp" />
+
+    <TextView
+        android:text="@string/temperature"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/temperature"
+        android:layout_margin="8dp" />
+
+    <TextView
+        android:text="@string/wind"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/wind"
+        android:layout_margin="8dp" />
+
+    <TextView
+        android:text="@string/pressure"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pressure"
+        android:layout_margin="8dp" />
+
+    <TextView
+        android:text="@string/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/description"
+        android:layout_margin="8dp" />
+
+</LinearLayout>
