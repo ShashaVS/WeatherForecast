@@ -53,9 +53,9 @@ public class ResponseWeather {
         return weather;
     }
 
-    public JsonElement getWeatherDescription() {
+    public String getWeatherDescription() {
         JsonObject item = (JsonObject) weather.get(0);
-        return item.get("description");
+        return item.get("description").getAsString();
     }
 
     public JsonObject getWind() {

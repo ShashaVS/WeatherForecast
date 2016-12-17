@@ -3,6 +3,8 @@ package com.shashavs.weatherforecast;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
@@ -41,6 +44,13 @@ public class ForecastFragment extends Fragment {
     private TextView wind;
     private TextView pressure;
     private TextView description;
+
+    private final String KEY_CITY = "city";
+    private final String KEY_TIME = "time";
+    private final String KEY_TEMP = "temperature";
+    private final String KEY_WIND = "wind";
+    private final String KEY_PRESS = "pressure";
+    private final String KEY_DESC = "description";
 
     public static ForecastFragment newInstance() {
         return new ForecastFragment();
@@ -75,10 +85,15 @@ public class ForecastFragment extends Fragment {
         btnLocation.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                btnLocation.setEnabled(false);
-                progressBar.setVisibility(View.VISIBLE);
 
-                getWeatherFromLocation();
+                if(!isOnline()) {
+                    setForecastFromPref();
+                    Toast.makeText(getContext(), getString(R.string.error_msg), Toast.LENGTH_SHORT).show();
+                } else {
+                    btnLocation.setEnabled(false);
+                    progressBar.setVisibility(View.VISIBLE);
+                    getWeatherFromLocation();
+                }
             }
         });
 
@@ -131,20 +146,22 @@ public class ForecastFragment extends Fragment {
 
             ResponseWeather respWeather = response.body();
 
-            city.setText(getString(R.string.city) + " " + respWeather.getCity());
+            if(respWeather != null) {
+                QueryPreferences.setString(getActivity(), KEY_CITY, respWeather.getCity());
+                Calendar mDate = Calendar.getInstance();
+                mDate.setTimeInMillis(respWeather.getTime()*1000);
+                QueryPreferences.setString(getActivity(), KEY_TIME,
+                        mDate.get(Calendar.DAY_OF_MONTH) + "/" + (mDate.get(Calendar.MONTH) + 1) + "/" + mDate.get(Calendar.YEAR) + " "
+                                + mDate.get(Calendar.HOUR_OF_DAY) + ":" + mDate.get(Calendar.MINUTE));
+                QueryPreferences.setString(getActivity(), KEY_TEMP, respWeather.getTemperature() + " °C");
+                QueryPreferences.setString(getActivity(), KEY_WIND, respWeather.getWindSpeed() + " meter/sec");
+                QueryPreferences.setString(getActivity(), KEY_PRESS, respWeather.getPressure() + " mm");
+                QueryPreferences.setString(getActivity(), KEY_DESC, respWeather.getWeatherDescription());
 
-            Calendar mydate = Calendar.getInstance();
-            mydate.setTimeInMillis(respWeather.getTime()*1000);
+                Toast.makeText(getContext(), getString(R.string.success_msg), Toast.LENGTH_SHORT).show();
+            }
 
-            time.setText(getString(R.string.time) + " "
-                    + mydate.get(Calendar.DAY_OF_MONTH) + "/" + (mydate.get(Calendar.MONTH) + 1) + "/" + mydate.get(Calendar.YEAR) + " "
-                    + mydate.get(Calendar.HOUR_OF_DAY) + ":" + mydate.get(Calendar.MINUTE)
-            );
-            temperature.setText(getString(R.string.temperature) + " " + respWeather.getTemperature() + " °C");
-            wind.setText(getString(R.string.wind) + " " + respWeather.getWindSpeed() + " meter/sec");
-            pressure.setText(getString(R.string.pressure) + " " + respWeather.getPressure() + " mm");
-            description.setText(getString(R.string.description) + " " + respWeather.getWeatherDescription());
-
+            setForecastFromPref();
             btnLocation.setEnabled(true);
             progressBar.setVisibility(View.INVISIBLE);
         }
@@ -152,6 +169,26 @@ public class ForecastFragment extends Fragment {
         @Override
         public void onFailure(Call<ResponseWeather> call, Throwable t) {
             Log.d(TAG, "onFailure: " + call.request() + "| Throwable: "+ t);
+            Toast.makeText(getActivity(), getString(R.string.error_msg), Toast.LENGTH_SHORT).show();
+
+            setForecastFromPref();
+            btnLocation.setEnabled(true);
+            progressBar.setVisibility(View.INVISIBLE);
         }
     };
+
+    private void setForecastFromPref() {
+        city.setText(getString(R.string.city) + " " + QueryPreferences.getSrting(getActivity(), KEY_CITY));
+        time.setText(getString(R.string.time) + " " + QueryPreferences.getSrting(getActivity(), KEY_TIME));
+        temperature.setText(getString(R.string.temperature) + " " + QueryPreferences.getSrting(getActivity(), KEY_TEMP));
+        wind.setText(getString(R.string.wind) + " " + QueryPreferences.getSrting(getActivity(), KEY_WIND));
+        pressure.setText(getString(R.string.pressure) + " " + QueryPreferences.getSrting(getActivity(), KEY_PRESS));
+        description.setText(getString(R.string.description) + " " + QueryPreferences.getSrting(getActivity(), KEY_DESC));
+    }
+
+    private boolean isOnline(){
+        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(getActivity().CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        return (networkInfo != null && networkInfo.isConnected());
+    }
 }

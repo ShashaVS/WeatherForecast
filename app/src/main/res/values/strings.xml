@@ -9,4 +9,7 @@
     <string name="pressure">Atmospheric pressure:</string>
     <string name="description">Weather Description:</string>
 
+    <string name="error_msg">Unable to get data from the server!</string>
+    <string name="success_msg">Server Data obtained successfully!</string>
+
 </resources>
